@@ -19,7 +19,7 @@
 package com.skydoves.balloon
 
 import android.view.View
-import android.view.ViewTreeObserver
+import androidx.annotation.MainThread
 
 /** shows the balloon on the center of an anchor view. */
 fun View.showBalloon(balloon: Balloon) {
@@ -81,11 +81,7 @@ fun View.showAlignLeft(balloon: Balloon, xOff: Int, yOff: Int) {
   balloon { balloon.showAlignLeft(this, xOff, yOff) }
 }
 
+@MainThread
 internal inline fun View.balloon(crossinline block: () -> Unit) {
-  this.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-    override fun onGlobalLayout() {
-      block()
-      viewTreeObserver.removeOnGlobalLayoutListener(this)
-    }
-  })
+  post { block() }
 }

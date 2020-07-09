@@ -19,13 +19,17 @@
 package com.skydoves.balloon
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.annotation.Px
 
 @DslMarker
 annotation class IconFormDsl
 
 /** creates an instance of [IconForm] from [IconForm.Builder] using kotlin dsl. */
-fun iconForm(context: Context, block: IconForm.Builder.() -> Unit): IconForm =
+inline fun iconForm(context: Context, block: IconForm.Builder.() -> Unit): IconForm =
   IconForm.Builder(context).apply(block).build()
 
 /**
@@ -35,29 +39,44 @@ fun iconForm(context: Context, block: IconForm.Builder.() -> Unit): IconForm =
 class IconForm(builder: Builder) {
 
   val drawable = builder.drawable
-  val iconSize = builder.iconSize
-  val iconSpace = builder.iconSpace
-  val iconColor = builder.iconColor
+  @Px val iconSize = builder.iconSize
+  @Px val iconSpace = builder.iconSpace
+  @ColorInt val iconColor = builder.iconColor
 
   /** Builder class for [IconForm]. */
   @IconFormDsl
-  class Builder(context: Context) {
+  class Builder(val context: Context) {
     @JvmField
     var drawable: Drawable? = null
-    @JvmField
+    @JvmField @Px
     var iconSize: Int = context.dp2Px(28)
-    @JvmField
+    @JvmField @Px
     var iconSpace: Int = context.dp2Px(8)
-    @JvmField
-    var iconColor: Int = -3
+    @JvmField @ColorInt
+    var iconColor: Int = Color.WHITE
 
+    /** sets the [Drawable] of the icon. */
     fun setDrawable(value: Drawable?): Builder = apply { this.drawable = value }
-    fun setIconSize(value: Int): Builder = apply { this.iconSize = value }
-    fun setIconSpace(value: Int): Builder = apply { this.iconSpace = value }
-    fun setIconColor(value: Int): Builder = apply { this.iconColor = value }
 
-    fun build(): IconForm {
-      return IconForm(this)
+    /** sets the [Drawable] of the icon using resource. */
+    fun setDrawableResource(@DrawableRes value: Int): Builder = apply {
+      this.drawable = context.contextDrawable(value)
     }
+
+    /** sets the size of the icon. */
+    fun setIconSize(@Px value: Int): Builder = apply { this.iconSize = value }
+
+    /** sets the space between the icon and the main text content. */
+    fun setIconSpace(@Px value: Int): Builder = apply { this.iconSpace = value }
+
+    /** sets the color of the icon. */
+    fun setIconColor(@ColorInt value: Int): Builder = apply { this.iconColor = value }
+
+    /** sets the color of the icon using resource */
+    fun setIconColorResource(@ColorInt value: Int): Builder = apply {
+      this.iconColor = context.contextColor(value)
+    }
+
+    fun build() = IconForm(this)
   }
 }

@@ -16,11 +16,12 @@
 
 package com.skydoves.balloon
 
-/** BalloonAnimation is the collection of the popup animations.  */
+/** BalloonAnimation is the collection of the popup animations. */
 @Suppress("unused")
 enum class BalloonAnimation {
   NONE,
   ELASTIC,
   FADE,
-  CIRCULAR
+  CIRCULAR,
+  OVERSHOOT
 }

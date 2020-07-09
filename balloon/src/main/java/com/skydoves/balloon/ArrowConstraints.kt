@@ -16,10 +16,15 @@
 
 package com.skydoves.balloon
 
-/** ArrowOrientation determines the orientation of the arrow. */
-enum class ArrowOrientation {
-  BOTTOM,
-  TOP,
-  LEFT,
-  RIGHT
+/**
+ * ArrowConstraints determines the constraints of the arrow positioning.
+ * [ArrowConstraints.ALIGN_BALLOON]: aligning based on the balloon.
+ * [ArrowConstraints.ALIGN_ANCHOR]: aligning based on the anchor.
+ */
+enum class ArrowConstraints {
+  /** Aligning based on the balloon. */
+  ALIGN_BALLOON,
+
+  /** Aligning based on the anchor. */
+  ALIGN_ANCHOR
 }

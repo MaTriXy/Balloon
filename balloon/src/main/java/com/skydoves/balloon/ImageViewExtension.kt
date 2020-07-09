@@ -17,15 +17,17 @@
 package com.skydoves.balloon
 
 import android.content.res.ColorStateList
-import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.widget.ImageViewCompat
 
 /** applies icon form attributes to a ImageView instance. */
-internal fun ImageView.applyIconForm(iconForm: IconForm) {
-  val params = LinearLayout.LayoutParams(iconForm.iconSize, iconForm.iconSize)
-  params.setMargins(0, 0, iconForm.iconSpace, 0)
-  layoutParams = params
-  setImageDrawable(iconForm.drawable)
-  ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(iconForm.iconColor))
+internal fun AppCompatImageView.applyIconForm(iconForm: IconForm) {
+  iconForm.drawable?.let {
+    setImageDrawable(it)
+    ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(iconForm.iconColor))
+    layoutParams = LinearLayout.LayoutParams(iconForm.iconSize, iconForm.iconSize)
+      .apply { setMargins(0, 0, iconForm.iconSpace, 0) }
+    visible(true)
+  }
 }

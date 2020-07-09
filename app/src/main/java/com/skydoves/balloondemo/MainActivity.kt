@@ -17,24 +17,29 @@
 package com.skydoves.balloondemo
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.skydoves.balloon.OnBalloonClickListener
+import com.skydoves.balloon.balloon
 import com.skydoves.balloon.showAlignTop
+import com.skydoves.balloondemo.factory.ViewHolderBalloonFactory
+import com.skydoves.balloondemo.recycler.ItemUtils
 import com.skydoves.balloondemo.recycler.SampleAdapter
 import com.skydoves.balloondemo.recycler.SampleItem
-import com.skydoves.balloondemo.recycler.ItemUtils
-import com.skydoves.balloondemo.recycler.SampleViewHolder
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.bottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.button
+import kotlinx.android.synthetic.main.activity_main.recyclerView
+import kotlinx.android.synthetic.main.activity_main.tabLayout
 
-class MainActivity : AppCompatActivity(), SampleViewHolder.Delegate, OnBalloonClickListener {
+class MainActivity : AppCompatActivity(),
+  SampleAdapter.SampleViewHolder.Delegate,
+  OnBalloonClickListener {
 
   private val adapter by lazy { SampleAdapter(this) }
-
   private val profileBalloon by lazy { BalloonUtils.getProfileBalloon(this, this) }
   private val navigationBalloon by lazy { BalloonUtils.getNavigationBalloon(this, this, this) }
+  private val viewHolderBalloon by balloon(ViewHolderBalloonFactory::class)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -44,7 +49,6 @@ class MainActivity : AppCompatActivity(), SampleViewHolder.Delegate, OnBalloonCl
     tabLayout.addTab(tabLayout.newTab().setText("Contents"))
 
     recyclerView.adapter = adapter
-    recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
     adapter.addItems(ItemUtils.getSamples(this))
 
     button.showAlignTop(profileBalloon)
@@ -66,10 +70,12 @@ class MainActivity : AppCompatActivity(), SampleViewHolder.Delegate, OnBalloonCl
     }
   }
 
-  override fun onBalloonClick() {
+  override fun onBalloonClick(view: View) {
     navigationBalloon.dismiss()
-    Toast.makeText(baseContext, "dismissed", Toast.LENGTH_SHORT).show()
+    Toast.makeText(applicationContext, "dismissed", Toast.LENGTH_SHORT).show()
   }
 
-  override fun onItemClick(sampleItem: SampleItem) = Unit
+  override fun onItemClick(sampleItem: SampleItem, view: View) {
+    this.viewHolderBalloon.showAlignBottom(view)
+  }
 }

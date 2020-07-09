@@ -16,11 +16,17 @@
 
 package com.skydoves.balloon
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.annotation.TargetApi
 import android.os.Build
 import android.view.View
 import android.view.ViewAnimationUtils
+import androidx.annotation.MainThread
+import kotlin.math.max
 
 /** makes visible or invisible a View align the value parameter. */
+@MainThread
 internal fun View.visible(value: Boolean) {
   if (value) {
     this.visibility = View.VISIBLE
@@ -30,31 +36,48 @@ internal fun View.visible(value: Boolean) {
 }
 
 /** shows circular revealed animation to a view. */
-internal fun View.circularRevealed() {
-  this.addOnLayoutChangeListener(
-    object : View.OnLayoutChangeListener {
-      override fun onLayoutChange(
-        view: View,
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
-        oldLeft: Int,
-        oldTop: Int,
-        oldRight: Int,
-        oldBottom: Int
-      ) {
-        view.removeOnLayoutChangeListener(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          val animator = ViewAnimationUtils.createCircularReveal(
-            view,
-            (view.left + view.right) / 2,
-            (view.top + view.bottom) / 2,
-            0f,
-            Math.max(view.width, view.height).toFloat())
-          animator.duration = 500
-          animator.start()
+@MainThread
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+internal fun View.circularRevealed(circularDuration: Long) {
+  visibility = View.INVISIBLE
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    post {
+      if (isAttachedToWindow) {
+        visibility = View.VISIBLE
+        ViewAnimationUtils.createCircularReveal(this,
+          (left + right) / 2,
+          (top + bottom) / 2,
+          0f,
+          max(width, height).toFloat()).apply {
+          duration = circularDuration
+          start()
         }
       }
-    })
+    }
+  }
+}
+
+/** shows circular unrevealed animation to a view. */
+@MainThread
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+internal fun View.circularUnRevealed(circularDuration: Long, doAfterFinish: () -> Unit) {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    post {
+      if (isAttachedToWindow) {
+        ViewAnimationUtils.createCircularReveal(this,
+          (left + right) / 2,
+          (top + bottom) / 2,
+          max(width, height).toFloat(),
+          0f).apply {
+          duration = circularDuration
+          start()
+        }.addListener(object : AnimatorListenerAdapter() {
+          override fun onAnimationEnd(animation: Animator?) {
+            super.onAnimationEnd(animation)
+            doAfterFinish()
+          }
+        })
+      }
+    }
+  }
 }

@@ -12,14 +12,15 @@ android {
         versionCode versions.versionCode
         versionName versions.versionName
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
-    implementation "androidx.appcompat:appcompat:$versions.androidxAppcompat"
     implementation "com.google.android.material:material:$versions.googleMaterial"
-    implementation "com.github.skydoves:baserecyclerviewadapter:$versions.baseAdapter"
-    implementation "de.hdodenhof:circleimageview:$versions.circleimageview"
     implementation project(":balloon")
 }
 

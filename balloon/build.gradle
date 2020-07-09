@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'org.jetbrains.dokka'
 apply from: '../dependencies.gradle'
 apply from: '../publish.gradle'
 
@@ -13,18 +12,24 @@ android {
         versionCode versions.versionCode
         versionName versions.versionName
     }
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:$versions.androidxAppcompat"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
+    implementation "androidx.appcompat:appcompat:$versions.androidxAppcompat"
+    implementation "androidx.cardview:cardview:$versions.cardView"
+    annotationProcessor "android.arch.lifecycle:compiler:$versions.lifecycle"
 }
 
 dokka {
-    moduleName = 'balloon'
     outputFormat = 'html'
-    //noinspection GroovyAccessibility
     outputDirectory = "$buildDir/javadoc"
+    configuration {
+        moduleName = 'balloon'
+    }
 }
 
 tasks.withType(Javadoc) {

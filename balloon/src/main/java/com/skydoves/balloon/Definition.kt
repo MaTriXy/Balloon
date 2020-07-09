@@ -16,10 +16,23 @@
 
 package com.skydoves.balloon
 
-/** ArrowOrientation determines the orientation of the arrow. */
-enum class ArrowOrientation {
-  BOTTOM,
-  TOP,
-  LEFT,
-  RIGHT
+/** definition of the non-value of Int type. */
+const val NO_INT_VALUE: Int = Int.MIN_VALUE
+
+/** definition of the non-value of Float type. */
+const val NO_Float_VALUE: Float = 0f
+
+/** definition of the non-value of Long type. */
+const val NO_LONG_VALUE: Long = -1L
+
+/** definition of the left-to-right value. */
+const val LTR: Int = 1
+
+/** returns the negative of this value. */
+fun Int.unaryMinus(predicate: Boolean): Int {
+  return if (predicate) {
+    unaryMinus()
+  } else {
+    this
+  }
 }

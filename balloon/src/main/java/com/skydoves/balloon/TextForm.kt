@@ -19,14 +19,19 @@
 package com.skydoves.balloon
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
-import androidx.core.content.ContextCompat
+import android.view.Gravity
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import com.skydoves.balloon.annotations.Sp
 
 @DslMarker
 annotation class TextFormDsl
 
 /** creates an instance of [TextForm] from [TextForm.Builder] using kotlin dsl. */
-fun textForm(context: Context, block: TextForm.Builder.() -> Unit): TextForm =
+inline fun textForm(context: Context, block: TextForm.Builder.() -> Unit): TextForm =
   TextForm.Builder(context).apply(block).build()
 
 /**
@@ -35,29 +40,71 @@ fun textForm(context: Context, block: TextForm.Builder.() -> Unit): TextForm =
  */
 class TextForm(builder: Builder) {
 
-  val text = builder.text
-  val textSize = builder.textSize
-  val textColor = builder.textColor
-  val textStyle = builder.textTypeface
+  val text: CharSequence = builder.text
+  @Sp val textSize: Float = builder.textSize
+  @ColorInt val textColor: Int = builder.textColor
+  val textIsHtml: Boolean = builder.textIsHtml
+  val textStyle: Int = builder.textTypeface
+  val textTypeface: Typeface? = builder.textTypefaceObject
+  val textGravity: Int = builder.textGravity
 
   /** Builder class for [TextForm]. */
   @TextFormDsl
-  class Builder(context: Context) {
+  class Builder(val context: Context) {
     @JvmField
-    var text: String = ""
-    @JvmField
+    var text: CharSequence = ""
+
+    @JvmField @Sp
     var textSize: Float = 12f
+
+    @JvmField @ColorInt
+    var textColor = Color.WHITE
+
     @JvmField
-    var textColor = ContextCompat.getColor(context, R.color.white)
+    var textIsHtml: Boolean = false
+
     @JvmField
     var textTypeface = Typeface.NORMAL
 
-    fun setText(value: String): Builder = apply { this.text = value }
-    fun setTextSize(value: Float): Builder = apply { this.textSize = value }
-    fun setTextColor(value: Int): Builder = apply { this.textColor = value }
-    fun setTextTypeFace(value: Int): Builder = apply { this.textTypeface = value }
-    fun build(): TextForm {
-      return TextForm(this)
+    @JvmField
+    var textTypefaceObject: Typeface? = null
+
+    @JvmField
+    var textGravity: Int = Gravity.CENTER
+
+    /** sets the content text of the form. */
+    fun setText(value: CharSequence): Builder = apply { this.text = value }
+
+    /** sets the content text of the form using string resource. */
+    fun setTextResource(@StringRes value: Int): Builder = apply {
+      this.text = context.getString(value)
     }
+
+    /** sets the size of the text. */
+    fun setTextSize(@Sp value: Float): Builder = apply { this.textSize = value }
+
+    /** sets the color of the text. */
+    fun setTextColor(@ColorInt value: Int): Builder = apply { this.textColor = value }
+
+    /** sets whether the text will be parsed as HTML (using Html.fromHtml(..)) */
+    fun setTextIsHtml(value: Boolean): Builder = apply { this.textIsHtml = value }
+
+    /** sets the color of the text using resource. */
+    fun setTextColorResource(@ColorRes value: Int): Builder = apply {
+      this.textColor = context.contextColor(value)
+    }
+
+    /** sets the [Typeface] of the text. */
+    fun setTextTypeface(value: Int): Builder = apply { this.textTypeface = value }
+
+    /** sets the [Typeface] of the text. */
+    fun setTextTypeface(value: Typeface?): Builder = apply { this.textTypefaceObject = value }
+
+    /** sets gravity of the text. */
+    fun setTextGravity(value: Int): Builder = apply {
+      this.textGravity = value
+    }
+
+    fun build() = TextForm(this)
   }
 }
